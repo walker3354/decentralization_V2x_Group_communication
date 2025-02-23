@@ -1,0 +1,10 @@
+^C:\USERS\USER\DESKTOP\V2X\BUILD\CMAKEFILES\0705D66EE12F7C187E92903F6B0CF126\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/USER/Desktop/V2x -BC:/Users/USER/Desktop/V2x/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/USER/Desktop/V2x/build/V2x.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
