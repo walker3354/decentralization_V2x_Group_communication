@@ -18,17 +18,18 @@ class Vehicle {
         vector<uint8_t> vehicle_sk_bytes;
         vector<uint8_t> vehicle_pk_bytes;
 
-        vector<uint8_t> pop_received_message;
         vector<G2Element> pop_received_signs;
         G2Element pop_aggregate_sign;
 
     public:
-        Vehicle(int vehicle_id, vector<uint8_t> seed = pre_set_seed) {
+        Vehicle(int vehicle_id, uint8_t seed) {
             this->vehicle_id = vehicle_id;
-            PrivateKey vehicle_sk = AugSchemeMPL().KeyGen(seed);
+            pre_set_seed[0] = seed;
+            PrivateKey vehicle_sk = AugSchemeMPL().KeyGen(pre_set_seed);
             this->vehicle_pk = vehicle_sk.GetG1Element();
             this->vehicle_sk_bytes = vehicle_sk.Serialize();
             this->vehicle_pk_bytes = this->vehicle_pk.Serialize();
+            this->print_vehicle_info();
         }
 
         void print_vehicle_info() {
@@ -56,12 +57,8 @@ class Vehicle {
             this->pop_aggregate_sign = aggregate_sign;
         }
 
-        void pop_receive_sign(vector<uint8_t> message, G2Element sign) {
-            if (message == this->pop_received_message) {
-                this->pop_received_signs.push_back(sign);
-            } else {
-                cout << "\terror occur!!" << endl;
-            }
+        void pop_receive_sign(G2Element sign) {
+            this->pop_received_signs.push_back(sign);
         }
 
         G2Element pop_aggregating_signs() {
@@ -70,12 +67,12 @@ class Vehicle {
             return this->pop_aggregate_sign;
         }
 
-        bool pop_verify_aggregate_sign(G2Element aggregate_sign) {
+        bool pop_verify_aggregate_sign(vector<uint8_t> message) {
             vector<G1Element> pks;
             for (const auto &i : this->id_pk_set) {
                 pks.push_back(i.second);
             }
-            return PopSchemeMPL().FastAggregateVerify(
-                pks, this->pop_received_message, this->pop_aggregate_sign);
+            return PopSchemeMPL().FastAggregateVerify(pks, message,
+                                                      this->pop_aggregate_sign);
         }
 };
