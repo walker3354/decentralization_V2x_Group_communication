@@ -47,18 +47,19 @@ class Vehicle {
         void receive_vehicle_info(int vehicle_id, G1Element vehicel_pk) {
             this->id_pk_set[vehicle_id] = vehicel_pk;
         }
+
         // pop scheme(aggregrate)
         G2Element pop_sign_message(vector<uint8_t> message) {
             return PopSchemeMPL().Sign(
                 PrivateKey::FromByteVector(this->vehicle_sk_bytes), message);
         }
 
-        void pop_receive_aggregate_sign(G2Element aggregate_sign) {
-            this->pop_aggregate_sign = aggregate_sign;
-        }
-
         void pop_receive_sign(G2Element sign) {
             this->pop_received_signs.push_back(sign);
+        }
+
+        void pop_receive_aggregate_sign(G2Element aggregate_sign) {
+            this->pop_aggregate_sign = aggregate_sign;
         }
 
         G2Element pop_aggregating_signs() {
